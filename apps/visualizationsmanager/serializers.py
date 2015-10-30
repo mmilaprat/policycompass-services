@@ -101,7 +101,7 @@ class BaseVisualizationSerializer(ModelSerializer):
     #resource_url = serializers.URLField(source='details_url', blank=True)
     #unit = UnitField(source='unit_id')
     #language = LanguageField(source='language_id')
-    
+        
     creator_path = serializers.Field(source='creator_path')
     
     #external_resource = ExternalResourceField(source='ext_resource_id', blank=True)
