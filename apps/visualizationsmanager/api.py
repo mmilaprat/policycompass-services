@@ -1,28 +1,21 @@
-from .serializers import *
-from rest_framework import viewsets
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.reverse import reverse
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework import generics
-from policycompass_services import permissions
-
-
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework import status, filters
 #from rest_framework import filters
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from rest_framework.parsers import JSONParser,YAMLParser
 #from .models import Visualization, MetricsInVisualizations, HistoricalEventsInVisualizations
 from .models import Visualization, DatasetsInVisualizations, HistoricalEventsInVisualizations
-
-
-
+from .serializers import *
+from rest_framework.permissions import IsAuthenticated
+from .permissions import IsAuthenticatedCanCreate
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 #from .utils import get_rawdata_for_visualization
 from django.db import IntegrityError, transaction
-
+from rest_framework.reverse import reverse
 from rest_framework.generics import strict_positive_int
-
-
+from policycompass_services import permissions
 
 import django_filters
 
@@ -194,9 +187,7 @@ class VisualizationFilter(django_filters.FilterSet):
         fields = ['language']
 
 
-#class VisualizationList(APIView):
-class VisualizationList(viewsets.ModelViewSet):   
-     
+class VisualizationList(APIView):
     """
     Serves the visualization list resource.
     """
@@ -254,6 +245,7 @@ class VisualizationList(viewsets.ModelViewSet):
     def post(self, request, *args, **kwargs):
         serializer = WriteVisualizationSerializer(data=request.DATA)
         if serializer.is_valid():
+            serializer.object.creator_path = self.request.user.resource_path
             serializer.save()
             s = ReadVisualizationSerializer(serializer.object, context={'request': request})
             return Response(s.data, status=status.HTTP_201_CREATED)
@@ -263,3 +255,4 @@ class VisualizationList(viewsets.ModelViewSet):
 class VisualizationDetail(generics.RetrieveUpdateDestroyAPIView):
     model = Visualization
     serializer_class = ReadVisualizationSerializer
+    permission_classes = permissions.IsCreatorOrReadOnly,

@@ -2,15 +2,12 @@ from django.conf.urls import patterns, url, include
 
 #from .api import VisualizationList, VisualizationDetail, Base
 from .api import *
-from rest_framework import routers
 
 visualization_urls = patterns(
     '',
     url(r'^/(?P<pk>\d+)$', VisualizationDetail.as_view(), name='visualization-detail'),
-    url(r'^$', VisualizationList, name='visualization-list')
+    url(r'^$', VisualizationList.as_view(), name='visualization-list')
 )
-
-
 
 #visualization_metrics_urls = patterns(
 #    '',
