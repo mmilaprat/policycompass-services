@@ -2,9 +2,8 @@
 Provides custom serializer fields
 """
 __author__ = 'mmilaprat'
-
 from rest_framework import serializers
-from rest_framework.serializers import ValidationError
+from rest_framework.serializers import ValidationError,  WritableField, SlugRelatedField
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -60,3 +59,9 @@ class VisualizationTitleField(serializers.WritableField):
         if not type(value) is list:
             raise ValidationError("Visualization is not a list")
         return value
+
+class PolicyDomainSlugRelatedField(SlugRelatedField):
+
+    def to_internal_value(self, data):
+        i = 5
+        pass    

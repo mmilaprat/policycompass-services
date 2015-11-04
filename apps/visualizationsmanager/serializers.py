@@ -1,12 +1,12 @@
 __author__ = 'miquel'
-
 #from .models import Visualization, MetricsInVisualizations, HistoricalEventsInVisualizations
-from .models import Visualization, DatasetsInVisualizations, HistoricalEventsInVisualizations
-from rest_framework.serializers import ModelSerializer, WritableField, ValidationError
+from rest_framework.serializers import ModelSerializer, WritableField, ValidationError, SlugRelatedField, RelatedField, Field
+from .models import *
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework import pagination
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from .fields import *
 #from apps.metricsmanager.models import Metric
 #from apps.eventsmanager.models import Event
 
@@ -117,7 +117,12 @@ class BaseVisualizationSerializer(ModelSerializer):
     #metrics_in_visualization = MetricsField(source='metrics_in_visualization')
     
     datasets_in_visualization = DatasetsField(source='datasets_in_visualization')
+    visualization_type_id = serializers.IntegerField(source='visualization_type_id')
     
+    policy_domains = SlugRelatedField(many=True, slug_field='domain', source='domains')
+    
+    #policy_domains = PolicyDomainsField(source='policy_domains')
+        
     #historical_events_in_visualization = HistoricalEventsField(source='historical_events')
     
 
@@ -171,8 +176,9 @@ class WriteVisualizationSerializer(BaseVisualizationSerializer):
     historical_events_in_visualization = HistoricalEventsField(source='historical_events_in_visualization', required=False)
     #metrics_in_visualization = MetricsField(source='metrics_in_visualization', required=False)
     datasets_in_visualization = DatasetsField(source='datasets_in_visualization', required=False)
+        
     creator_path = serializers.Field(source='creator_path')
-    
+       
     #data = RawDataField(required=True, write_only=True)
 
     def restore_object(self, attrs, instance=None):
@@ -184,3 +190,14 @@ class WriteVisualizationSerializer(BaseVisualizationSerializer):
 
         return visualization
 
+
+#class DetailVisualizationSerializer(BaseVisualizationSerializer):
+#
+#    policy_domains = WritableField(source='policy_domains')
+#
+#    class Meta:
+#        exclude = (
+#            
+#        )
+#        fields = ()
+#        model = Visualization
